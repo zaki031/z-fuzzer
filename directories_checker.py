@@ -7,7 +7,7 @@ try:
     with open(dirs) as f:
         for line in f:
          r = requests.get(h+line.strip())
-         print(line.strip()+ '', r)
+         print(line.strip()+ '', r  ,'     |  size: ',len(r.content) , 'bytes')
     
 except requests.exceptions.HTTPError as error:
   print(error)
