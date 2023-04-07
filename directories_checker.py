@@ -1,6 +1,6 @@
 import requests
 
-h = input("Enter the website your want to check :")
+h = input("Enter the website your want to check :")+'/'
 dirs = input("Enter the dirs txt file you want to check PATH :")
 
 try:
