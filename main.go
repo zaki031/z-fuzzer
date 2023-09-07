@@ -1,78 +1,66 @@
 package main
 
 import (
-
-
-  "fmt"
-  "net/http"
-  "bufio"
-  "os"
-  
-  
-  
+	"bufio"
+	"flag"
+	"fmt"
+	"net/http"
+	"os"
 )
 
 
-
-
-//checking the given route 
-func checkRoute(url, route string){
-  newUrl := url+"/"+route
-  res, err := http.Get(newUrl)
-  if err!=nil{
-    fmt.Println(err)
-  }
-
-  if res.StatusCode == 200{
-    fmt.Println(route,"--- successful connection ---", res.StatusCode)
-  }
-  if res.StatusCode == 404{
-    fmt.Println(route,"--- route doesnt exist ---", res.StatusCode)
-  }
+type fuzzer struct {
+  Routes []string
+  URL string
 }
 
-
-
-//looping into the list txt file and checking the StatusCode
-
-func CheckList(url,path string){
-
+// creating a new fuzzer with the specified routes
+func NewFuzzer(url string,path string)*fuzzer{
+  var routes []string
   f, err := os.Open(path)
   if err != nil {
-  fmt.Println(err)
+  panic(err)
   }
   scanner := bufio.NewScanner(f)
   for scanner.Scan(){
 
-    checkRoute(url,scanner.Text())
+    routes = append(routes,scanner.Text())
   }
   if err != nil{
-    fmt.Println("f")
+    panic("Could Not Read file")
   }
 
 
+  return &fuzzer{Routes:routes,URL:url} 
 }
 
+//checking the given route 
+func (f *fuzzer ) CheckRoutes(){
+  for _,route := range f.Routes {
+      newUrl := f.URL+"/"+route
+      res, err := http.Get(newUrl)
+      if err!=nil{
+        fmt.Println(err)
+      }
 
+      if res.StatusCode == 200{
+      fmt.Println(route,"--- successful connection ---", res.StatusCode)
+      }
+      if res.StatusCode == 404{
+        fmt.Println(route,"--- route doesnt exist ---", res.StatusCode)
+      }
 
-func userInput(){
-  
-  var url string
+  }
+ }
 
-  fmt.Println("Enter the link of the website you want to scan : ")
-  fmt.Scan(&url)
-
-  CheckList(url,"./list.txt")
-  
-
-}
  
 func main() {
-    
-  
-  userInput()
+  //getting vlag values
+  url := flag.String("url", "", "website url")
+  flag.Parse()
+
+  fuzzer := NewFuzzer(*url, "./list.txt")
+  fuzzer.CheckRoutes()
 
 }
-
-
 
