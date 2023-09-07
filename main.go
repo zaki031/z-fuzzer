@@ -27,7 +27,7 @@ func NewFuzzer(url string,path string)*fuzzer{
     routes = append(routes,scanner.Text())
   }
   if err != nil{
-    panic(err)
+    panic("Could Not Read file")
   }
 
 
@@ -63,6 +63,4 @@ func main() {
   fuzzer.CheckRoutes()
 
 }
-
-
 
